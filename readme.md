@@ -10,8 +10,11 @@ Based off the [EDD Software Licensing documentation](http://docs.easydigitaldown
 
  - Plugins implementing this library must use PHP 5.3+
  - Library should be bundled at `lib/skyverge/updater`
-   - Recommend adding an install path via composer:
+   - Recommend adding a custom install path via composer:
    ```
+   "require-dev": {
+       "mnsami/composer-custom-directory-installer": "1.1.*"
+   },
    "extra": {
       "installer-paths": {
         "plugin/lib/skyverge/updater": ["skyverge/wc-plugin-updater"]
