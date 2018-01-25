@@ -36,12 +36,20 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License_Settings' 
 class License_Settings {
 
 
+	/** @var string $plugin_url the URL for the plugin file */
+	protected $plugin_url;
+
+
 	/**
 	 * \SkyVerge\WooCommerce\PluginUpdater\License_Settings constructor.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @param string $plugin_url the plugin file URL
 	 */
-	public function __construct() {
+	public function __construct( $plugin_url ) {
+
+		$this->plugin_url = $plugin_url;
 
 		// add the license settings
 		add_action( 'current_screen', array( $this, 'current_screen' ) );
@@ -120,9 +128,47 @@ class License_Settings {
 
 		}
 
-		$output .= '</table></div></form></div>';
+		$output .= '</table></div></form>';
+
+		if ( ! $this->is_jilt_active() ) {
+			$output .= $this->get_jilt_banner();
+		}
+
+		$output .= '</div>'; // end wrapper container
 
 		echo $output;
+	}
+
+
+	/**
+	 * Returns HTML for the Jilt banner if not active.
+	 *
+	 * @since 1.0.0
+	 */
+	protected function get_jilt_banner() {
+
+		ob_start();
+		?>
+
+		<div class="jilt-notice">
+			<div class="logo">
+				<a href="<?php echo esc_url( $this->get_jilt_url() ); ?>">
+					<img src="<?php echo trailingslashit( esc_html( $this->plugin_url  ) ); ?>lib/skyverge/updater/assets/img/jilt-logo-landscape-white.svg" width="150" />
+				</a>
+			</div>
+			<div class="text">
+				<h3><?php esc_html_e( 'Increase sales by 15% in 10 minutes or less!', 'skyverge-plugin-updater' ); ?></h3>
+				<p><?php esc_html_e( 'Jilt helps you recover lost sales with automated emails.', 'skyverge-plugin-updater' ); ?></p>
+			</div>
+			<div class="link">
+				<a class="btn" href="<?php echo esc_url( $this->get_jilt_url() ); ?>">
+					<?php esc_html_e( 'Get Jilt', 'skyverge-plugin-updater' ); ?> &rarr;
+				</a>
+			</div>
+		</div>
+
+		<?php
+		return ob_get_clean();
 	}
 
 
@@ -386,10 +432,10 @@ class License_Settings {
 	protected function move_output() {
 
 		wc_enqueue_js("
-			jQuery(document).ready(function($) {
-				$( 'div.wrap.wc_addons_wrap' ).append( $('div.skyverge-helper.container' ) );
-			});
-		");
+		jQuery(document).ready(function($) {
+			$( 'div.wrap.wc_addons_wrap' ).append( $('div.skyverge-helper.container' ) );
+		});
+	");
 	}
 
 
@@ -397,7 +443,7 @@ class License_Settings {
 
 
 	/**
-	 * Settings Sanitization.
+	 * Settings sanitization.
 	 *
 	 * Adds a settings error (for the updated message).
 	 *
@@ -450,6 +496,55 @@ class License_Settings {
 	 */
 	public function get_license_settings_url() {
 		return admin_url( 'admin.php?page=wc-addons&section=skyverge-helper' );
+	}
+
+
+	/**
+	 * Checks if a plugin is active.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool true if Jilt for WC is installed and active
+	 */
+	protected function is_jilt_active() {
+
+		$active_plugins = (array) get_option( 'active_plugins', array() );
+
+		if ( is_multisite() ) {
+			$active_plugins = array_merge( $active_plugins, array_keys( get_site_option( 'active_sitewide_plugins', array() ) ) );
+		}
+
+		$plugin_filenames = array();
+
+		foreach ( $active_plugins as $plugin ) {
+
+			if ( false !== strpos( $plugin, '/' ) ) {
+
+				// normal plugin name (plugin-dir/plugin-filename.php)
+				list( , $filename ) = explode( '/', $plugin );
+
+			} else {
+
+				// no directory, just plugin file
+				$filename = $plugin;
+			}
+
+			$plugin_filenames[] = $filename;
+		}
+
+		return in_array( 'jilt-for-woocommerce.php', $plugin_filenames );
+	}
+
+
+	/**
+	 * Returns a URL for Jilt upsells or banners.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string Jilt URL
+	 */
+	protected function get_jilt_url() {
+		return 'https://jilt.com/?partner=1&campaign=SkyVerge+Free+Plugin+Banner&utm_medium=display&utm_source=SkyVerge+Plugin&utm_campaign=SkyVerge+Free+Plugin+Banner';
 	}
 
 

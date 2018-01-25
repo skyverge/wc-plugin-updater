@@ -7,10 +7,6 @@
 /* Settings page styles
 -------------------------------------------------------------- */
 
-.wc_addons_wrap .storefront {
-	display:none !important;
-}
-
 .wrap-licenses .form-table,
 .wrap-licenses thead,
 .wrap-licenses tbody,
@@ -97,4 +93,60 @@
 }
 .wrap-licenses p.submit {
 	clear: both;
+}
+
+.wc_addons_wrap .storefront {
+	display:none !important;
+}
+
+.jilt-notice {
+	max-width: 800px;
+	min-width: 400px;
+	background: #335473;
+	color: #fff;
+	padding: 10px 25px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.jilt-notice h3 {
+	margin-bottom: 0;
+	color: #fff;
+	font-size: 1.4em;
+	text-align: center;
+}
+
+.jilt-notice p {
+	margin-top: 0;
+	text-align: center;
+}
+
+.jilt-notice .btn {
+	padding: 8px 15px;
+	border-radius: 3px;
+	border: 2px solid #e4ad3b;
+	color: #e4ad3b;
+	text-decoration: none;
+	font-size: 1.2em;
+	font-weight: 700;
+	-webkit-transition: background-color .2s ease-out;
+	-moz-transition: background-color .2s ease-out;
+	-o-transition: background-color .2s ease-out;
+	transition: background-color .2s ease-out;
+}
+
+.jilt-notice .btn:hover {
+	color: #fff;
+	background: #e4ad3b;
+}
+
+.jilt-notice p {
+	font-size: 1.1em;
+}
+
+@media only screen and (max-width: 826px) {
+	.jilt-notice .link {
+		display: none;
+	}
 }

@@ -117,7 +117,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License' ) ) :
 			// load settings if not available already
 			if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License_Settings' ) ) {
 				require_once( $this->path . '/lib/skyverge/updater/class-skyverge-plugin-license-settings.php' );
-				$this->settings = new License_Settings();
+				$this->settings = new License_Settings( $this->plugin_url );
 			}
 
 			if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) {
@@ -256,7 +256,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License' ) ) :
 		public function add_styles() {
 
 			if ( isset( $_GET['section'] ) && 'skyverge-helper' === $_GET['section'] ) {
-				wp_enqueue_style( 'skyverge-plugin-license-settings', $this->plugin_url . '/lib/skyverge/updater/skyverge-updater-styles.css', array(), $this->version );
+				wp_enqueue_style( 'skyverge-plugin-license-settings', $this->plugin_url . '/lib/skyverge/updater/assets/css/skyverge-updater-styles.css', array(), $this->version );
 			}
 		}
 
