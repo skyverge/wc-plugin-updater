@@ -62,6 +62,9 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 		/** @var string $cache_key key to cache requests */
 		private $cache_key;
 
+		/** @var array $api_url_available checks if the URL is available */
+		private $api_url_available = [];
+
 
 		/**
 		 * Class constructor.
@@ -429,7 +432,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 
 			if ( ! empty( $request->sections ) ) {
 
-				foreach( $request->sections as $key => $section ) {
+				foreach ( $request->sections as $key => $section ) {
 					$request->$key = (array) $section;
 				}
 			}
@@ -446,12 +449,11 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 		 * @return bool true if the url is available
 		 */
 		protected function api_status_check() {
-			global $skyverge_api_url_available;
 
 			// do a quick status check on this domain if we haven't already checked it.
 			$store_hash = md5( $this->api_url );
 
-			if ( ! is_array( $skyverge_api_url_available ) || ! isset( $skyverge_api_url_available[ $store_hash ] ) ) {
+			if ( ! is_array( $this->api_url_available ) || ! isset( $this->api_url_available[ $store_hash ] ) ) {
 
 				$test_url_parts = parse_url( $this->api_url );
 
@@ -461,7 +463,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 
 				if ( empty( $host ) ) {
 
-					$skyverge_api_url_available[ $store_hash ] = false;
+					$this->api_url_available[ $store_hash ] = false;
 
 				} else {
 
@@ -471,11 +473,11 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 						'sslverify' => $this->verify_ssl(),
 					] );
 
-					$skyverge_api_url_available[ $store_hash ] = ! is_wp_error( $response );
+					$this->api_url_available[ $store_hash ] = ! is_wp_error( $response );
 				}
 			}
 
-			return $skyverge_api_url_available[ $store_hash ];
+			return $this->api_url_available[ $store_hash ];
 		}
 
 
@@ -626,7 +628,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 			], $value );
 
 			if ( ! empty( $custom_icons ) ) {
-				$value->{"icons"} = (array) $custom_icons;
+				$value->icons = (array) $custom_icons;
 			}
 
 			$data = array(
