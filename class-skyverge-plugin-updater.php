@@ -410,7 +410,24 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 				$request->icons = maybe_unserialize( $request->icons );
 			}
 
-			if( ! empty( $request->sections ) ) {
+			/**
+			 * Allow plugins to load their own custom icons for the updater.
+			 *
+			 * @since 1.1.0
+			 *
+			 * @param array the custom icons; should include $icon['svg'] or $icon['1x'] and $icon['2x']
+			 * @param object $value the version info
+			 */
+			$custom_icons = apply_filters( "skyverge_plugin_updater_{$this->name}_icon", [
+				'1x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-128.png',
+				'2x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-256.png',
+			], $request );
+
+			if ( ! empty( $custom_icons ) ) {
+				$request->icons = (array) $custom_icons;
+			}
+
+			if ( ! empty( $request->sections ) ) {
 
 				foreach( $request->sections as $key => $section ) {
 					$request->$key = (array) $section;
