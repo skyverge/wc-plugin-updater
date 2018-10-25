@@ -153,12 +153,12 @@ class License_Settings {
 		<div class="jilt-notice">
 			<div class="logo">
 				<a href="<?php echo esc_url( $this->get_jilt_url() ); ?>">
-					<img src="<?php echo trailingslashit( esc_html( $this->plugin_url  ) ); ?>lib/skyverge/updater/assets/img/jilt-logo-landscape-white.svg" width="150" />
+					<img src="<?php echo trailingslashit( esc_url( $this->plugin_url  ) ); ?>lib/skyverge/updater/assets/img/jilt-logotype-white.svg" width="100" />
 				</a>
 			</div>
 			<div class="text">
 				<h3><?php esc_html_e( 'Increase sales by 15% in 10 minutes or less!', 'skyverge-plugin-updater' ); ?></h3>
-				<p><?php esc_html_e( 'Jilt helps you recover lost sales with automated emails.', 'skyverge-plugin-updater' ); ?></p>
+				<p><?php esc_html_e( 'Jilt helps you increase sales using powerful automated emails.', 'skyverge-plugin-updater' ); ?></p>
 			</div>
 			<div class="link">
 				<a class="btn" href="<?php echo esc_url( $this->get_jilt_url() ); ?>">
@@ -231,7 +231,7 @@ class License_Settings {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string[] $args arguments passed by the setting
+	 * @param array $args arguments passed by the setting
 	 */
 	public function license_key_callback( $args ) {
 

@@ -102,7 +102,7 @@
 .jilt-notice {
 	max-width: 800px;
 	min-width: 400px;
-	background: #335473;
+	background: #3680c2;
 	color: #fff;
 	padding: 10px 25px;
 	display: flex;
@@ -125,8 +125,8 @@
 .jilt-notice .btn {
 	padding: 8px 15px;
 	border-radius: 3px;
-	border: 2px solid #e4ad3b;
-	color: #e4ad3b;
+	border: 2px solid #edb53d;
+	color: #edb53d;
 	text-decoration: none;
 	font-size: 1.2em;
 	font-weight: 700;
@@ -138,7 +138,7 @@
 
 .jilt-notice .btn:hover {
 	color: #fff;
-	background: #e4ad3b;
+	background: #edb53d;
 }
 
 .jilt-notice p {
