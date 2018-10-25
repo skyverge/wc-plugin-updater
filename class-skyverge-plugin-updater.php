@@ -16,7 +16,7 @@
  * versions in the future. If you wish to customize this plugin for your
  * needs please refer to http://skyverge.com/product/tba/ for more information.
  *
- * Based on the Easy Digital Downloads `EDD_SL_Plugin_Updater` Sample plugin, version 1.6.13.
+ * Based on the Easy Digital Downloads `EDD_SL_Plugin_Updater` Sample plugin, version 1.6.17.
  *
  * @package   SkyVerge/WooCommerce/PluginUpdater
  * @author    SkyVerge & Easy Digital Downloads
@@ -42,7 +42,10 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 		private $api_url;
 
 		/** @var string[] $api_data the updater data  */
-		private $api_data = array();
+		private $api_data = [];
+
+		/** @var string $plugin_file the plugin file */
+		private $plugin_file;
 
 		/** @var string $name the plugin name */
 		private $name;
@@ -74,6 +77,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 
 			$this->api_url     = trailingslashit( $_api_url );
 			$this->api_data    = $_api_data;
+			$this->plugin_file = $_plugin_file;
 			$this->name        = plugin_basename( $_plugin_file );
 			$this->slug        = basename( $_plugin_file, '.php' );
 			$this->version     = $_api_data['version'];
@@ -116,8 +120,8 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param string[] $_transient_data Update array build by WordPress.
-		 * @return string[] Modified update array with custom plugin data.
+		 * @param array $_transient_data Update array build by WordPress.
+		 * @return array Modified update array with custom plugin data.
 		 */
 		public function check_update( $_transient_data ) {
 			global $pagenow;
@@ -165,7 +169,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 		 * @since 1.0.0
 		 *
 		 * @param string $file plugin file
-		 * @param string[] $plugin
+		 * @param object $plugin
 		 */
 		public function show_update_notification( $file, $plugin ) {
 
@@ -186,6 +190,19 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 				if ( false === $version_info ) {
 
 					$version_info = $this->api_request( 'plugin_latest_version', array( 'slug' => $this->slug, 'beta' => $this->beta ) );
+
+					// since we disabled our filter for the transient, we aren't running our object conversion on banners, sections, or icons. Do this now:
+					if ( isset( $version_info->banners ) && ! is_array( $version_info->banners ) ) {
+						$version_info->banners = $this->convert_object_to_array( $version_info->banners );
+					}
+
+					if ( isset( $version_info->sections ) && ! is_array( $version_info->sections ) ) {
+						$version_info->sections = $this->convert_object_to_array( $version_info->sections );
+					}
+
+					if ( isset( $version_info->icons ) && ! is_array( $version_info->icons ) ) {
+						$version_info->icons = $this->convert_object_to_array( $version_info->icons );
+					}
 
 					$this->set_version_info_cache( $version_info );
 				}
@@ -264,11 +281,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 		 */
 		public function plugins_api_filter( $_data, $_action = '', $_args = null ) {
 
-			if ( $_action != 'plugin_information' ) {
-				return $_data;
-			}
-
-			if ( ! isset( $_args->slug ) || ( $_args->slug != $this->slug ) ) {
+			if ( $_action !== 'plugin_information' || ! isset( $_args->slug ) || ( $_args->slug !== $this->slug ) ) {
 				return $_data;
 			}
 
@@ -276,7 +289,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 				'slug'   => $this->slug,
 				'is_ssl' => is_ssl(),
 				'fields' => array(
-					'banners' => array(),
+					'banners' => [],
 					'reviews' => false
 				)
 			);
@@ -302,28 +315,17 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 				$_data = $api_request_transient;
 			}
 
-			// convert sections into an associative array, since we're getting an object, but Core expects an array.
+			// convert objects into associative arrays - we're getting an object, but core expects an array
 			if ( isset( $_data->sections ) && ! is_array( $_data->sections ) ) {
-
-				$new_sections = array();
-
-				foreach ( $_data->sections as $key => $value ) {
-					$new_sections[ $key ] = $value;
-				}
-
-				$_data->sections = $new_sections;
+				$_data->sections = $this->convert_object_to_array( $_data->sections );
 			}
 
-			// convert banners into an associative array, since we're getting an object, but Core expects an array.
 			if ( isset( $_data->banners ) && ! is_array( $_data->banners ) ) {
+				$_data->banners = $this->convert_object_to_array( $_data->banners );
+			}
 
-				$new_banners = array();
-
-				foreach ( $_data->banners as $key => $value ) {
-					$new_banners[ $key ] = $value;
-				}
-
-				$_data->banners = $new_banners;
+			if ( isset( $_data->icons ) && ! is_array( $_data->icons ) ) {
+				$_data->icons = $this->convert_object_to_array( $_data->icons );
 			}
 
 			return $_data;
@@ -364,11 +366,11 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 
 			$data = array_merge( $this->api_data, $_data );
 
-			if ( $data['slug'] != $this->slug ) {
+			if ( $data['slug'] !== $this->slug || ! $this->api_status_check() ) {
 				return false;
 			}
 
-			if( $this->api_url == trailingslashit( home_url() ) ) {
+			if ( $this->api_url == trailingslashit( home_url() ) ) {
 				return false; // don't allow a plugin to ping itself
 			}
 
@@ -384,8 +386,11 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 				'beta'       => ! empty( $data['beta'] ),
 			);
 
-			$verify_ssl = $this->verify_ssl();
-			$request    = wp_remote_post( $this->api_url, array( 'timeout' => 25, 'sslverify' => $verify_ssl, 'body' => $api_params ) );
+			$request = wp_remote_post( $this->api_url, [
+				'timeout'   => 25,
+				'sslverify' => $this->verify_ssl(),
+				'body'      => $api_params,
+			] );
 
 			if ( ! is_wp_error( $request ) ) {
 				$request = json_decode( wp_remote_retrieve_body( $request ) );
@@ -401,6 +406,10 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 				$request->banners = maybe_unserialize( $request->banners );
 			}
 
+			if ( $request && isset( $request->icons ) ) {
+				$request->icons = maybe_unserialize( $request->icons );
+			}
+
 			if( ! empty( $request->sections ) ) {
 
 				foreach( $request->sections as $key => $section ) {
@@ -409,6 +418,47 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 			}
 
 			return $request;
+		}
+
+
+		/**
+		 * Performs a status check on the API url.
+		 *
+		 * @since 1.1.0
+		 *
+		 * @return bool true if the url is available
+		 */
+		protected function api_status_check() {
+			global $skyverge_api_url_available;
+
+			// do a quick status check on this domain if we haven't already checked it.
+			$store_hash = md5( $this->api_url );
+
+			if ( ! is_array( $skyverge_api_url_available ) || ! isset( $skyverge_api_url_available[ $store_hash ] ) ) {
+
+				$test_url_parts = parse_url( $this->api_url );
+
+				$scheme = ! empty( $test_url_parts['scheme'] ) ? $test_url_parts['scheme']     : 'http';
+				$host   = ! empty( $test_url_parts['host'] )   ? $test_url_parts['host']       : '';
+				$port   = ! empty( $test_url_parts['port'] )   ? ':' . $test_url_parts['port'] : '';
+
+				if ( empty( $host ) ) {
+
+					$skyverge_api_url_available[ $store_hash ] = false;
+
+				} else {
+
+					$test_url = "{$scheme}://{$host}{$port}";
+					$response = wp_remote_get( $test_url, [
+						'timeout'   => 25,
+						'sslverify' => $this->verify_ssl(),
+					] );
+
+					$skyverge_api_url_available[ $store_hash ] = ! is_wp_error( $response );
+				}
+			}
+
+			return $skyverge_api_url_available[ $store_hash ];
 		}
 
 
@@ -449,8 +499,11 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 					'beta'       => ! empty( $data['beta'] )
 				);
 
-				$verify_ssl = $this->verify_ssl();
-				$request    = wp_remote_post( $this->api_url, array( 'timeout' => 25, 'sslverify' => $verify_ssl, 'body' => $api_params ) );
+				$request = wp_remote_post( $this->api_url, [
+					'timeout'   => 25,
+					'sslverify' => $this->verify_ssl(),
+					'body'      => $api_params,
+				] );
 
 				if ( ! is_wp_error( $request ) ) {
 					$version_info = json_decode( wp_remote_retrieve_body( $request ) );
@@ -481,6 +534,29 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 
 
 		/**
+		 * Convert some objects to arrays when injecting data into the update API.
+		 *
+		 * Some data like sections, banners, and icons are expected to be an associative array, however due to the JSON
+		 * decoding, they are objects. This method allows us to pass in the object and return an associative array.
+		 *
+		 * @since 1.1.0
+		 *
+		 * @param \stdClass $data
+		 * @return array
+		 */
+		private function convert_object_to_array( $data ) {
+
+			$new_data = [];
+
+			foreach ( $data as $key => $value ) {
+				$new_data[ $key ] = $value;
+			}
+
+			return $new_data;
+		}
+
+
+		/**
 		 * Gets cached plugin version information.
 		 *
 		 * @since 1.0.0
@@ -500,6 +576,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 				return false; // Cache is expired
 			}
 
+
 			return json_decode( $cache['value'] );
 		}
 
@@ -516,6 +593,23 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 
 			if ( empty( $cache_key ) ) {
 				$cache_key = $this->cache_key;
+			}
+
+			/**
+			 * Allow plugins to load their own custom icons for the updater.
+			 *
+			 * @since 1.1.0
+			 *
+			 * @param array the custom icons; should include $icon['svg'] or $icon['1x'] and $icon['2x']
+			 * @param object $value the version info
+			 */
+			$custom_icons = apply_filters( "skyverge_plugin_updater_{$this->name}_icon", [
+				'1x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-128.png',
+				'2x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-256.png',
+			], $value );
+
+			if ( ! empty( $custom_icons ) ) {
+				$value->{"icons"} = (array) $custom_icons;
 			}
 
 			$data = array(
@@ -536,6 +630,18 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 		 */
 		private function verify_ssl() {
 			return (bool) apply_filters( 'skyverge_sl_api_request_verify_ssl', true, $this );
+		}
+
+
+		/**
+		 * Helper to get the plugin URL.
+		 *
+		 * @since 1.1.0
+		 *
+		 * @return string the plugin URL
+		 */
+		public function get_plugin_url() {
+			return untrailingslashit( plugins_url( '/', $this->plugin_file ) );
 		}
 
 
