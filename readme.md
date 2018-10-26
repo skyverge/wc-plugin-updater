@@ -8,7 +8,7 @@ Based off the [EDD Software Licensing documentation](http://docs.easydigitaldown
 
 ### Requirements
 
- - Plugins implementing this library must use PHP 5.3+
+ - Plugins implementing this library must use PHP 5.4+
  - Library should be bundled at `lib/skyverge/updater`
    - Recommend adding a custom install path via composer:
    ```

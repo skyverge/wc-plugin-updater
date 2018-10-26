@@ -99,8 +99,8 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License' ) ) :
 			$this->item_name      = $_item_name;
 			$this->version        = $_version;
 			$this->author         = $_author;
-			$this->license        = trim( get_option( "{$this->item_shortname}_license_key", '' ) );
 			$this->item_shortname = preg_replace( '/[^a-zA-Z0-9_\s]/', '', str_replace( 'woocommerce', 'wc', str_replace( ' ', '_', strtolower( $this->item_name ) ) ) );
+			$this->license        = trim( get_option( "{$this->item_shortname}_license_key", '' ) );
 
 			$this->includes();
 			$this->add_hooks();
@@ -165,7 +165,6 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License' ) ) :
 		}
 
 
-
 		/**
 		 * Load the auto updater.
 		 *
@@ -173,11 +172,11 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License' ) ) :
 		 */
 		public function auto_updater() {
 
-			$data = array(
+			$data = [
 				'version' => $this->version,
 				'license' => $this->license,
 				'author'  => $this->author,
-			);
+			];
 
 			if ( ! empty( $this->item_id ) ) {
 				$data['item_id'] = $this->item_id;
@@ -198,7 +197,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License' ) ) :
 		 * @param string[] $schedules existing schedules
 		 * @return string[] update schedules
 		 */
-		public function add_cron_schedule( $schedules = array() ) {
+		public function add_cron_schedule( $schedules = [] ) {
 
 			// adds a weekly schedule to available cron schedules
 			$schedules['weekly'] = array(
@@ -256,7 +255,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License' ) ) :
 		public function add_styles() {
 
 			if ( isset( $_GET['section'] ) && 'skyverge-helper' === $_GET['section'] ) {
-				wp_enqueue_style( 'skyverge-plugin-license-settings', $this->plugin_url . '/lib/skyverge/updater/assets/css/skyverge-updater-styles.css', array(), $this->version );
+				wp_enqueue_style( 'skyverge-plugin-license-settings', $this->plugin_url . '/lib/skyverge/updater/assets/css/skyverge-updater-styles.css', [], $this->version );
 			}
 		}
 
@@ -451,7 +450,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License' ) ) :
 				return;
 			}
 
-			$messages = array();
+			$messages = [];
 			$license  = get_option( "{$this->item_shortname}_license_active" );
 
 			if ( in_array( $current_screen->id, $screens, true ) && is_object( $license ) && 'valid' !== $license->license && ! $showed_invalid_message ) {
@@ -486,7 +485,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License' ) ) :
 		 */
 		public function plugin_row_license_missing( $plugin_data, $version_info ) {
 
-			static $showed_missing_key_message = array();
+			static $showed_missing_key_message = [];
 
 			$license = get_option( "{$this->item_shortname}_license_active" );
 
