@@ -29,7 +29,7 @@ namespace SkyVerge\WooCommerce\PluginUpdater\v1_1_1;
 
 defined( 'ABSPATH' ) or exit;
 
-if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License\\' ) ) :
+if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License' ) ) :
 
 	/**
 	 * Provides a general license settings page for plugins to add license key inputs.
