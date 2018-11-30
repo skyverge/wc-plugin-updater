@@ -224,6 +224,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\Updater' )
 				set_site_transient( 'update_plugins', $update_cache );
 
 			} else {
+
 				$version_info = $update_cache->response[ $this->name ];
 			}
 
@@ -422,8 +423,8 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\Updater' )
 			 * @param object $value the version info
 			 */
 			$custom_icons = apply_filters( "skyverge_plugin_updater_{$this->name}_icon", [
-				'1x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-128.png',
-				'2x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-256.png',
+				'1x' => License::get_updater_url() . '/assets/img/plugin-icon-128.png',
+				'2x' => License::get_updater_url() . '/assets/img/plugin-icon-256.png',
 			], $request );
 
 			if ( ! empty( $custom_icons ) ) {
@@ -623,8 +624,8 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\Updater' )
 			 * @param object $value the version info
 			 */
 			$custom_icons = apply_filters( "skyverge_plugin_updater_{$this->name}_icon", [
-				'1x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-128.png',
-				'2x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-256.png',
+				'1x' => License::get_updater_url() . '/assets/img/plugin-icon-128.png',
+				'2x' => License::get_updater_url() . '/assets/img/plugin-icon-256.png',
 			], $value );
 
 			if ( ! empty( $custom_icons ) ) {

@@ -153,7 +153,7 @@ class License_Settings {
 		<div class="jilt-notice">
 			<div class="logo">
 				<a href="<?php echo esc_url( $this->get_jilt_url() ); ?>">
-					<img src="<?php echo trailingslashit( esc_url( $this->plugin_url  ) ); ?>lib/skyverge/updater/assets/img/jilt-logotype-white.svg" width="100" />
+					<img src="<?php echo trailingslashit( esc_url( License::get_updater_url() ) ); ?>/assets/img/jilt-logotype-white.svg" width="100" />
 				</a>
 			</div>
 			<div class="text">
@@ -449,10 +449,10 @@ class License_Settings {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $input the value inputted in the field
+	 * @param string $input the value inputted in the field
 	 * @return string $input sanitized value
 	 */
-	function settings_sanitize( $input = array() ) {
+	function settings_sanitize( $input = '' ) {
 
 		$setting_types = array(
 			// we may add more types in the future

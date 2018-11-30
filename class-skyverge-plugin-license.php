@@ -69,11 +69,17 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License\\'
 		/** @var string $license license key */
 		private $license;
 
+		/** @var array $options the license options */
+		protected static $license_options;
+
 		/** @var string $updater_url the URL for plugin updates */
 		protected $updater_url = 'https://skyverge.com/';
 
 		/** @var \SkyVerge\WooCommerce\PluginUpdater\License_Settings $settings the settings instance */
 		protected $settings;
+
+		/** @var \SkyVerge\WooCommerce\PluginUpdater\Updater $updater the updater instance */
+		protected $updater;
 
 
 		/**
@@ -105,6 +111,10 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License\\'
 			$this->item_shortname = preg_replace( '/[^a-zA-Z0-9_\s]/', '', str_replace( 'woocommerce', 'wc', str_replace( ' ', '_', strtolower( $this->item_name ) ) ) );
 			$this->license        = trim( get_option( "{$this->item_shortname}_license_key", '' ) );
 
+			// pass plugin info into static context
+			self::$license_options['plugin_url']  = $_plugin_url;
+			self::$license_options['plugin_path'] = $_path;
+
 			$this->includes();
 			$this->add_hooks();
 		}
@@ -118,13 +128,13 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License\\'
 		public function includes() {
 
 			// load settings if not available already
-			if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License_Settings' ) ) {
-				require_once( $this->path . '/lib/skyverge/updater/class-skyverge-plugin-license-settings.php' );
+			if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License_Settings' ) ) {
+				require_once( self::get_updater_path() . '/class-skyverge-plugin-license-settings.php' );
 				$this->settings = new License_Settings( $this->plugin_url );
 			}
 
-			if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) {
-				require_once( $this->path . '/lib/skyverge/updater/class-skyverge-plugin-updater.php' );
+			if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\Updater' ) ) {
+				require_once( self::get_updater_path() . '/class-skyverge-plugin-updater.php' );
 			}
 		}
 
@@ -188,7 +198,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License\\'
 			}
 
 			// Setup the updater
-			$plugin_updater = new Updater( $this->file, $data );
+			$this->updater = new Updater( $this->file, $data );
 		}
 
 
@@ -258,7 +268,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License\\'
 		public function add_styles() {
 
 			if ( isset( $_GET['section'] ) && 'skyverge-helper' === $_GET['section'] ) {
-				wp_enqueue_style( 'skyverge-plugin-license-settings', $this->plugin_url . '/lib/skyverge/updater/assets/css/skyverge-updater-styles.css', [], $this->version );
+				wp_enqueue_style( 'skyverge-plugin-license-settings', self::get_updater_url() . '/assets/css/skyverge-updater-styles.css', [], $this->version );
 			}
 		}
 
@@ -500,6 +510,9 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License\\'
 		}
 
 
+		/** Helper methods ****************************************************/
+
+
 		/**
 		 * Get license settings page URL.
 		 *
@@ -512,9 +525,47 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License\\'
 
 		/**
 		 * Gets the license settings instance.
+		 *
+		 * @since 1.0.0
 		 */
 		public function get_license_settings_instance() {
 			return $this->settings;
+		}
+
+
+		/**
+		 * Gets the license settings instance.
+		 *
+		 * @since 1.1.1
+		 */
+		public function get_updater_instance() {
+			return $this->updater;
+		}
+
+
+		/**
+		 * Gets the updater lib path.
+		 *
+		 * @since 1.1.1
+		 */
+		public static function get_updater_path() {
+
+			$install_path = 'vendor/skyverge/wc-plugin-updater';
+
+			return untrailingslashit( trailingslashit( self::$license_options['plugin_path'] ) . $install_path );
+		}
+
+
+		/**
+		 * Gets the updater lib URL.
+		 *
+		 * @since 1.1.1
+		 */
+		public static function get_updater_url() {
+
+			$install_path = 'vendor/skyverge/wc-plugin-updater';
+
+			return untrailingslashit( trailingslashit( self::$license_options['plugin_url'] ) . $install_path );
 		}
 
 
