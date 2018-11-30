@@ -455,27 +455,44 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License\\'
 
 			static $showed_invalid_message = false;
 
-			$prefix  = sanitize_title( __( 'WooCommerce', 'woocommerce' ) );
-			$screens = array( "{$prefix}_page_wc-addons", "{$prefix}_page_wc-settings", 'plugins' );
-			$key     = trim( get_option( "{$this->item_shortname}_license_key", '' ) );
+			$prefix   = sanitize_title( __( 'WooCommerce', 'woocommerce' ) );
+			$screens  = [ "{$prefix}_page_wc-addons", "{$prefix}_page_wc-settings", 'plugins' ];
+			$messages = [];
 
-			if ( empty( $key ) || ! current_user_can( 'manage_woocommerce' ) ) {
+			if ( ! current_user_can( 'manage_woocommerce' ) ) {
 				return;
 			}
 
-			$messages = [];
-			$license  = get_option( "{$this->item_shortname}_license_active" );
+			// only show this notice on settings / Extensions screens
+			if ( in_array( $current_screen->id, $screens, true ) && ( ! isset( $_GET['section'] ) || 'skyverge-helper' !== $_GET['section'] ) ) {
 
-			if ( in_array( $current_screen->id, $screens, true ) && is_object( $license ) && 'valid' !== $license->license && ! $showed_invalid_message ) {
+				$license = get_option( "{$this->item_shortname}_license_active" );
+				$key     = trim( get_option( "{$this->item_shortname}_license_key", '' ) );
 
-				// only show this notice on settings / Extensions screens
-				if ( ! isset( $_GET['section'] ) || 'skyverge-helper' !== $_GET['section'] ) {
+				$license_page_prompt = sprintf(
+					/* translators: Placeholder: %1$s - <a>, %2$s - </a> */
+					__( 'Please go to the %1$sLicenses page%2$s to correct this issue.', 'skyverge-plugin-updater' ),
+					'<a href="' . $this->get_license_settings_url() . '">',
+					'</a>'
+				);
 
-					$messages[] = sprintf(
-						/* translators: Placeholder: %1$s - <a>, %2$s - </a> */
-						__( 'You have invalid or expired license keys for SkyVerge Plugins. Please go to the %1$sLicenses page%2$s to correct this issue.', 'skyverge-plugin-updater' ),
-						'<a href="' . $this->get_license_settings_url() . '">',
-						'</a>'
+				// warning for invalid licenses
+				if ( is_object( $license ) && 'valid' !== $license->license && ! $showed_invalid_message ) {
+
+					$messages['error'][] = sprintf(
+						/* translators: Placeholder: %s - Adds a prompt to go to the license page */
+						__( 'You have invalid or expired license keys for SkyVerge Plugins. %s', 'skyverge-plugin-updater' ),
+						$license_page_prompt
+					);
+
+					$showed_invalid_message = true;
+
+				} elseif ( empty( $key ) && ! $showed_invalid_message ) {
+
+					$messages['warning'][] = sprintf(
+						/* translators: Placeholder: %s - Adds a prompt to go to the license page */
+						__( "You don't currently receive automatic updates for SkyVerge Plugins. %s", 'skyverge-plugin-updater' ),
+						$license_page_prompt
 					);
 
 					$showed_invalid_message = true;
@@ -484,8 +501,11 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License\\'
 
 			if ( ! empty( $messages ) ) {
 
-				foreach( $messages as $message ) {
-					echo '<div class="error"><p>' . $message . '</p></div>';
+				foreach( $messages as $type => $message ) {
+
+					$message = implode( '<br />', $message );
+
+					echo '<div class="notice notice-' . $type . '"><p>' . $message . '</p></div>';
 				}
 			}
 		}
