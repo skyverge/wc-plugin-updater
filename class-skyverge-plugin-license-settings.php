@@ -22,11 +22,11 @@
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
-namespace SkyVerge\WooCommerce\PluginUpdater;
+namespace SkyVerge\WooCommerce\PluginUpdater\v1_1_1;
 
 defined( 'ABSPATH' ) or exit;
 
-if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\License_Settings' ) ) :
+if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\v1_1_1\\License_Settings' ) ) :
 
 /**
  * Provides a general license settings page for plugins to add license key inputs.
