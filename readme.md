@@ -20,11 +20,8 @@ Ensure the methods below exist (see below for copy/paste implementation if requi
 ```
 require_once( $this->get_plugin_path() . '/vendor/skyverge/wc-plugin-updater/class-skyverge-plugin-license.php' );
 
-// optional: custom license options, currently only 'updater_path'
-$options = [ 'updater_path' => 'vendor' ];
-
 // item ID is from skyverge.com download WP_Post ID
-$this->license = new \SkyVerge\WooCommerce\PluginUpdater\License( $this->get_plugin_file(), $this->get_plugin_path(), $this->get_plugin_url(), $this->get_plugin_name(), $this->get_version(), $this->get_download_id(), 'SkyVerge', $options );
+$this->license = new \SkyVerge\WooCommerce\PluginUpdater\License( $this->get_plugin_file(), $this->get_plugin_path(), $this->get_plugin_url(), $this->get_plugin_name(), $this->get_version(), $this->get_download_id() );
 ```
 
 That's it! This will handle adding settings for the license keys, validating license keys, and checking for plugin updates.
