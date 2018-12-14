@@ -544,7 +544,7 @@ class License_Settings {
 	 * @return string Jilt URL
 	 */
 	protected function get_jilt_url() {
-		return 'https://jilt.com/?partner=1&campaign=SkyVerge+Free+Plugin+Banner&utm_medium=display&utm_source=SkyVerge+Plugin&utm_campaign=SkyVerge+Free+Plugin+Banner';
+		return 'https://jilt.com/plugin-updater';
 	}
 
 
