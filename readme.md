@@ -9,18 +9,7 @@ Based off the [EDD Software Licensing documentation](http://docs.easydigitaldown
 ### Requirements
 
  - Plugins implementing this library must use PHP 5.4+
- - Library should be bundled at `lib/skyverge/updater`
-   - Recommend adding a custom install path via composer:
-   ```
-   "require-dev": {
-       "mnsami/composer-custom-directory-installer": "1.1.*"
-   },
-   "extra": {
-      "installer-paths": {
-        "plugin/lib/skyverge/updater": ["skyverge/wc-plugin-updater"]
-      }
-    }
-   ```
+ - Library should be bundled at `vendor/skyverge/wc-plugin-updater`
 
 ### Usage
 
@@ -29,7 +18,7 @@ Once included in the plugin build, usage is straight-forward, as all settings ad
 Ensure the methods below exist (see below for copy/paste implementation if required for your main plugin class), then instantiate the license class in your main plugin file:
 
 ```
-require_once( $this->get_plugin_path() . '/lib/skyverge/updater/class-skyverge-plugin-license.php');
+require_once( $this->get_plugin_path() . '/vendor/skyverge/wc-plugin-updater/class-skyverge-plugin-license.php' );
 
 // item ID is from skyverge.com download WP_Post ID
 $this->license = new \SkyVerge\WooCommerce\PluginUpdater\License( $this->get_plugin_file(), $this->get_plugin_path(), $this->get_plugin_url(), $this->get_plugin_name(), $this->get_version(), $this->get_download_id() );

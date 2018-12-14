@@ -422,8 +422,8 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 			 * @param object $value the version info
 			 */
 			$custom_icons = apply_filters( "skyverge_plugin_updater_{$this->name}_icon", [
-				'1x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-128.png',
-				'2x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-256.png',
+				'1x' => plugin_dir_url( __FILE__ ) . 'assets/img/plugin-icon-128.png',
+				'2x' => plugin_dir_url( __FILE__ ) . 'assets/img/plugin-icon-256.png',
 			], $request );
 
 			if ( ! empty( $custom_icons ) ) {
@@ -623,8 +623,8 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 			 * @param object $value the version info
 			 */
 			$custom_icons = apply_filters( "skyverge_plugin_updater_{$this->name}_icon", [
-				'1x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-128.png',
-				'2x' => $this->get_plugin_url() . '/lib/skyverge/updater/assets/img/plugin-icon-256.png',
+				'1x' => plugin_dir_url( __FILE__ ) . 'assets/img/plugin-icon-128.png',
+				'2x' => plugin_dir_url( __FILE__ ) . 'assets/img/plugin-icon-256.png',
 			], $value );
 
 			if ( ! empty( $custom_icons ) ) {
@@ -649,18 +649,6 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 		 */
 		private function verify_ssl() {
 			return (bool) apply_filters( 'skyverge_sl_api_request_verify_ssl', true, $this );
-		}
-
-
-		/**
-		 * Helper to get the plugin URL.
-		 *
-		 * @since 1.1.0
-		 *
-		 * @return string the plugin URL
-		 */
-		public function get_plugin_url() {
-			return untrailingslashit( plugins_url( '/', $this->plugin_file ) );
 		}
 
 
