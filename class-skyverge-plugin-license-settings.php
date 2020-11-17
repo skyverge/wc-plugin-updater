@@ -450,7 +450,7 @@ class License_Settings {
 	 * @param string $input the value inputted in the field
 	 * @return string $input sanitized value
 	 */
-	function settings_sanitize( $input = '' ) {
+	public function settings_sanitize( $input = '' ) {
 
 		$setting_types = array(
 			// we may add more types in the future
