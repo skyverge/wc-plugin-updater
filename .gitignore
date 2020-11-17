@@ -1,0 +1,30 @@
+# IDEs
+.project
+.settings
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.iml
+
+# Logs
+*.log
+
+# OSX
+.DS_Store
+
+# SASS
+.sass-cache*
+
+# NPM packages
+/node_modules
+package-lock.json
+
+# Composer
+/vendor
+
+# Builds
+/build
+*.zip
+
+# Docs stuff
+*/docs
