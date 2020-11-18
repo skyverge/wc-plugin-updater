@@ -21,7 +21,7 @@
  * @package   SkyVerge/WooCommerce/PluginUpdater
  * @author    SkyVerge
  * @copyright Copyright (c) 2012-2017, Easy Digital Downloads
- * @copyright Copyright (c) 2017-2018, SkyVerge, Inc.
+ * @copyright Copyright (c) 2017-2020, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
