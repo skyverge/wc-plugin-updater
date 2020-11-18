@@ -18,7 +18,7 @@
  *
  * @package   SkyVerge/WooCommerce/PluginUpdater
  * @author    SkyVerge
- * @copyright Copyright (c) 2017-2018, SkyVerge, Inc.
+ * @copyright Copyright (c) 2017-2020, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -398,7 +398,7 @@ class License_Settings {
 		$url = $this->get_license_settings_url();
 
 		wc_enqueue_js("
-			$( 'nav.nav-tab-wrapper' ).append('<a href=\"" . esc_url( $url ) . "\" class=\"nav-tab skyverge-helper\">" . __( 'SkyVerge Licenses', 'skyverge-plugin-updater' ) . " </a>');
+			$( 'nav.nav-tab-wrapper' ).append('<a href=\"" . esc_url( $url ) . "\" class=\"nav-tab skyverge-helper\">" . esc_html__( 'SkyVerge Licenses', 'skyverge-plugin-updater' ) . " </a>' );
 		");
 	}
 
@@ -410,16 +410,16 @@ class License_Settings {
 	 */
 	protected function change_active_tab() {
 
+		// removes the sections WooCommerce tries to add
 		wc_enqueue_js("
-			jQuery(document).ready(function($) {
-				$( 'nav.nav-tab-wrapper a' ).each( function() {
-					$( this ).removeClass( 'nav-tab-active' );
-				});
-				$( 'a.skyverge-helper' ).addClass( 'nav-tab-active' );
-				// remove the sections WC tries to add
-				$( 'div.wrap.wc_addons_wrap p' ).first().remove();
-				$( 'div.wrap.wc_addons_wrap br.clear' ).first().remove();
+			$( 'nav.nav-tab-wrapper a' ).each( function() {
+				$( this ).removeClass( 'nav-tab-active' );
 			});
+			
+			$( 'a.skyverge-helper' ).addClass( 'nav-tab-active' );
+			
+			$( 'div.wrap.wc_addons_wrap p' ).first().remove();
+			$( 'div.wrap.wc_addons_wrap br.clear' ).first().remove();
 		");
 	}
 
@@ -432,10 +432,8 @@ class License_Settings {
 	protected function move_output() {
 
 		wc_enqueue_js("
-		jQuery(document).ready(function($) {
 			$( 'div.wrap.wc_addons_wrap' ).append( $('div.skyverge-helper.container' ) );
-		});
-	");
+		");
 	}
 
 
@@ -452,7 +450,7 @@ class License_Settings {
 	 * @param string $input the value inputted in the field
 	 * @return string $input sanitized value
 	 */
-	function settings_sanitize( $input = '' ) {
+	public function settings_sanitize( $input = '' ) {
 
 		$setting_types = array(
 			// we may add more types in the future
