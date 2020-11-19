@@ -129,11 +129,6 @@ class License_Settings {
 		}
 
 		$output .= '</table></div></form>';
-
-		if ( ! $this->is_jilt_active() ) {
-			$output .= $this->get_jilt_banner();
-		}
-
 		$output .= '</div>'; // end wrapper container
 
 		echo $output;
@@ -144,31 +139,15 @@ class License_Settings {
 	 * Returns HTML for the Jilt banner if not active.
 	 *
 	 * @since 1.0.0
+     * @deprecated 1.1.3
+	 *
+	 * @return string
 	 */
 	protected function get_jilt_banner() {
 
-		ob_start();
-		?>
+		_deprecated_function( __METHOD__, '1.1.3' );
 
-		<div class="jilt-notice">
-			<div class="logo">
-				<a href="<?php echo esc_url( $this->get_jilt_url() ); ?>">
-					<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ); ?>assets/img/jilt-logotype-white.svg" width="100" />
-				</a>
-			</div>
-			<div class="text">
-				<h3><?php esc_html_e( 'Increase sales by 15% in 10 minutes or less!', 'skyverge-plugin-updater' ); ?></h3>
-				<p><?php esc_html_e( 'Jilt helps you increase sales using powerful automated emails.', 'skyverge-plugin-updater' ); ?></p>
-			</div>
-			<div class="link">
-				<a class="btn" href="<?php echo esc_url( $this->get_jilt_url() ); ?>">
-					<?php esc_html_e( 'Get Jilt', 'skyverge-plugin-updater' ); ?> &rarr;
-				</a>
-			</div>
-		</div>
-
-		<?php
-		return ob_get_clean();
+		return '';
 	}
 
 
@@ -498,39 +477,18 @@ class License_Settings {
 
 
 	/**
-	 * Checks if a plugin is active.
+	 * Checks if Jilt for WooCommerce is active.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @return bool true if Jilt for WC is installed and active
+	 * @deprecated 1.1.3
+     *
+	 * @return bool
 	 */
 	protected function is_jilt_active() {
 
-		$active_plugins = (array) get_option( 'active_plugins', array() );
+		_deprecated_function( __METHOD__, '1.1.3' );
 
-		if ( is_multisite() ) {
-			$active_plugins = array_merge( $active_plugins, array_keys( get_site_option( 'active_sitewide_plugins', array() ) ) );
-		}
-
-		$plugin_filenames = array();
-
-		foreach ( $active_plugins as $plugin ) {
-
-			if ( false !== strpos( $plugin, '/' ) ) {
-
-				// normal plugin name (plugin-dir/plugin-filename.php)
-				list( , $filename ) = explode( '/', $plugin );
-
-			} else {
-
-				// no directory, just plugin file
-				$filename = $plugin;
-			}
-
-			$plugin_filenames[] = $filename;
-		}
-
-		return in_array( 'jilt-for-woocommerce.php', $plugin_filenames );
+	    return false;
 	}
 
 
@@ -538,11 +496,15 @@ class License_Settings {
 	 * Returns a URL for Jilt upsells or banners.
 	 *
 	 * @since 1.0.0
+     * @deprecated 1.1.3
 	 *
-	 * @return string Jilt URL
+	 * @return string
 	 */
 	protected function get_jilt_url() {
-		return 'https://jilt.com/plugin-updater';
+
+		_deprecated_function( __METHOD__, '1.1.3' );
+
+	    return '';
 	}
 
 
