@@ -605,10 +605,14 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param string $value
+		 * @param mixed|object $value
 		 * @param string $cache_key
 		 */
 		public function set_version_info_cache( $value = '', $cache_key = '' ) {
+
+			if ( ! is_object( $value ) ) {
+				$value = new \stdClass();
+			}
 
 			if ( empty( $cache_key ) ) {
 				$cache_key = $this->cache_key;
