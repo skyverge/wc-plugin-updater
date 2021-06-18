@@ -150,7 +150,7 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 				$this->set_version_info_cache( $version_info );
 			}
 
-			if ( false !== $version_info && is_object( $version_info ) && isset( $version_info->new_version ) ) {
+			if ( is_object( $version_info ) && isset( $version_info->new_version ) ) {
 
 				if ( version_compare( $this->version, $version_info->new_version, '<' ) ) {
 					$_transient_data->response[ $this->name ] = $version_info;
@@ -591,8 +591,8 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 
 			$cache = get_option( $cache_key );
 
-			if ( empty( $cache['timeout'] ) || current_time( 'timestamp' ) > $cache['timeout'] ) {
-				return false; // Cache is expired
+			if ( ! $cache || empty( $cache['timeout'] ) || current_time( 'timestamp' ) > $cache['timeout'] ) {
+				return false; // cache is expired
 			}
 
 
@@ -605,13 +605,14 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param mixed|object $value
-		 * @param string $cache_key
+		 * @param object $object if not a valid object, it will bail and not cache the information
+		 * @param string $cache_key optional, will use the one set by the current class otherwise
+		 * @return bool whether the cache was set
 		 */
-		public function set_version_info_cache( $value = '', $cache_key = '' ) {
+		public function set_version_info_cache( $object = null, $cache_key = '' ) {
 
-			if ( ! is_object( $value ) ) {
-				$value = new \stdClass();
+			if ( ! is_object( $object ) ) {
+				return false;
 			}
 
 			if ( empty( $cache_key ) ) {
@@ -619,28 +620,30 @@ if ( ! class_exists( '\\SkyVerge\\WooCommerce\\PluginUpdater\\Updater' ) ) :
 			}
 
 			/**
-			 * Allow plugins to load their own custom icons for the updater.
+			 * Allows plugins to load their own custom icons for the updater.
 			 *
 			 * @since 1.1.0
 			 *
 			 * @param array the custom icons; should include $icon['svg'] or $icon['1x'] and $icon['2x']
-			 * @param object $value the version info
+			 * @param object $object the version info
 			 */
 			$custom_icons = apply_filters( "skyverge_plugin_updater_{$this->name}_icon", [
 				'1x' => plugin_dir_url( __FILE__ ) . 'assets/img/plugin-icon-128.png',
 				'2x' => plugin_dir_url( __FILE__ ) . 'assets/img/plugin-icon-256.png',
-			], $value );
+			], $object);
 
 			if ( ! empty( $custom_icons ) ) {
-				$value->icons = (array) $custom_icons;
+				$object->icons = (array) $custom_icons;
 			}
 
 			$data = array(
 				'timeout' => strtotime( '+3 hours', current_time( 'timestamp' ) ),
-				'value'   => json_encode( $value )
+				'value'   => json_encode( $object)
 			);
 
 			update_option( $cache_key, $data, 'no' );
+
+			return true;
 		}
 
 
